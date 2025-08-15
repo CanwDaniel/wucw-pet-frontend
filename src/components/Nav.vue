@@ -36,7 +36,7 @@ const changeTab = (tab: string) => {
 
 <style lang="scss">
 #nav {
-  position: absolute;
+  position: fixed;
   left: 50%;
   top: 40px;
   transform: translateX(-50%);

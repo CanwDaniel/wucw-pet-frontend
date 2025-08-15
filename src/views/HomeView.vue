@@ -1,20 +1,25 @@
 <template>
   <div id="home">
-    Home
+    <HomeBanner />
+    <HomeNavigation />
+    <HomeProductDesc />
+    <HomeOther />
   </div>
 </template>
 
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import HomeBanner from '@/components/Home/HomeBanner.vue';
+import HomeNavigation from '@/components/Home/HomeNavigation.vue';
+import HomeProductDesc from '@/components/Home/HomeProductDesc.vue';
+import HomeOther from '@/components/Home/HomeOther.vue';
+</script>
 
 <style scoped lang="scss">
 #home {
   height: 100%;
-  padding: 120px 240px 0;
 }
 
 @media (max-width: 1040px) {
-  #home {
-    padding: 120px 120px 0;
-  }
+  #home {}
 }
 </style>

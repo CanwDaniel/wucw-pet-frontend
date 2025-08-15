@@ -2,7 +2,15 @@
   <div id="settings">
     <el-table v-loading="table.loading" :data="table.data">
       <el-table-column v-for="col of table.column" :key="col.prop" :prop="col.prop" :label="col.label"
-        :formatter="col.formater" :min-width="col.minWidth" />
+        :formatter="col.formater" :min-width="col.minWidth">
+        <template #default="scope">
+          <div v-if="col.prop === 'avatar'">
+            <el-image style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover;" :src="scope.row.avatar">
+            </el-image>
+          </div>
+        </template>
+      </el-table-column>
+
       <el-table-column fixed="right" label="操作" min-width="130">
         <template #default="scope">
           <el-button link type="primary" size="small" @click="handleClick('add', scope.row)">添加</el-button>
@@ -107,8 +115,8 @@ const getUserList = (username: string = '', pageNo: number = 1, pageSize: number
   userListRequest({ username, pageNo, pageSize }).then((res: any) => {
     table.loading = true;
 
-    if (res.totalCount > 0) {
-      table.data = res.user;
+    if (res.code === 200) {
+      table.data = res.data.user;
     }
   }).finally(() => {
     table.loading = false;

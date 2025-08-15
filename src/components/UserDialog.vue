@@ -1,5 +1,5 @@
 <template>
-  <el-dialog v-model="visible" :title="dialogTitle" width="500">
+  <el-dialog v-model="visible" :title="dialogTitle" width="500" @close="close">
     <el-form ref="form" :model="formData" :rules="rules" label-width="auto">
       <el-form-item label="用户ID" prop="userid">
         <el-input v-model="formData.userid" disabled />
@@ -37,7 +37,11 @@
       </el-form-item>
 
       <el-form-item label="头像" prop="avatar">
-        <el-input v-model="formData.avatar" placeholder="请上传头像" />
+        <el-upload class="avatar-uploader" :action="baseURL" :show-file-list="false" :on-success="handleAvatarSuccess"
+          :before-upload="beforeAvatarUpload">
+          <img v-if="formData.avatar" :src="formData.avatar" class="avatar">
+          <i v-else class="avatar-uploader-icon"></i>
+        </el-upload>
       </el-form-item>
     </el-form>
 
@@ -58,6 +62,10 @@
 import { ref, computed, reactive } from 'vue'
 import type { ElForm } from 'element-plus'
 import type { FormInstance, FormRules } from 'element-plus'
+import { ElMessage } from 'element-plus';
+
+const url = `http://localhost:3000`;
+const baseURL = `${url}/user/upload`;
 
 const dialogTitle = ref('新增');
 
@@ -67,9 +75,9 @@ const formData = reactive({
   userid: '',
   username: '',
   password: '',
-  usertype: '',
+  usertype: 1,
   phone: '',
-  gender: '',
+  gender: 1,
   birthday: '',
   avatar: ''
 });
@@ -103,6 +111,9 @@ const rules = reactive<FormRules<RuleForm>>({
   birthday: [
     { required: true, message: '请选择出生日期', trigger: 'change' }
   ],
+  avatar: [
+    { required: true, message: '头像不能为空', trigger: 'change' }
+  ],
 })
 
 const props = defineProps({
@@ -123,7 +134,7 @@ const visible = computed({
 
 const close = () => {
   visible.value = false;
-  form.value?.resetFields();
+  form.value?.clearValidate();
 }
 
 const open = (title: string, row: any) => {
@@ -137,9 +148,9 @@ const open = (title: string, row: any) => {
       userid: '',
       username: '',
       password: '',
-      usertype: '',
+      usertype: 1,
       phone: '',
-      gender: '',
+      gender: 1,
       birthday: '',
       avatar: ''
     });
@@ -156,6 +167,24 @@ const save = () => {
   }
 }
 
+const handleAvatarSuccess = (file: any) => {
+  formData.avatar = `${url}/${file.data}`;
+}
+const beforeAvatarUpload = (file: any) => {
+  const imgType = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
+  const isType = imgType.includes(file.type);
+  const isLt3M = file.size / 1024 / 1024 < 3;
+
+  if (!isType) {
+    ElMessage({ type: 'success', message: '上传图片的格式只能是 PNG, JPG, GIF, WEBP' });
+  }
+  if (!isLt3M) {
+    ElMessage({ type: 'success', message: '上传头像图片大小不能超过 3MB' });
+  }
+
+  return isType && isLt3M;
+}
+
 defineExpose({
   close,
   open,
@@ -168,5 +197,45 @@ defineExpose({
 .el-date-editor.el-input__wrapper {
   width: 100%;
   height: 100%;
+}
+</style>
+
+<style>
+.avatar-uploader .el-upload {
+  border: 1px dashed #d9d9d9;
+  border-radius: 6px;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+}
+
+.avatar-uploader .el-upload:hover {
+  border-color: #409EFF;
+}
+
+.avatar-uploader-icon {
+  font-size: 28px;
+  color: #8c939d;
+  width: 178px;
+  height: 178px;
+  line-height: 178px;
+  text-align: center;
+  position: relative;
+
+  &::before {
+    content: "+";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 50px;
+    font-weight: 200;
+  }
+}
+
+.avatar {
+  width: 178px;
+  height: 178px;
+  display: block;
 }
 </style>
