@@ -3,7 +3,10 @@
     <HomeBanner />
     <HomeNavigation />
     <HomeProductDesc />
-    <HomeOther />
+    <HomeLeftRight />
+    <HomeVideo />
+    <HomeLine />
+    <!-- <HomeOther /> -->
   </div>
 </template>
 
@@ -11,7 +14,10 @@
 import HomeBanner from '@/components/Home/HomeBanner.vue';
 import HomeNavigation from '@/components/Home/HomeNavigation.vue';
 import HomeProductDesc from '@/components/Home/HomeProductDesc.vue';
-import HomeOther from '@/components/Home/HomeOther.vue';
+import HomeLeftRight from '@/components/Home/HomeLeftRight.vue';
+import HomeVideo from '@/components/Home/HomeVideo.vue';
+import HomeLine from '@/components/Home/HomeLine.vue';
+// import HomeOther from '@/components/Home/HomeOther.vue';
 </script>
 
 <style scoped lang="scss">
