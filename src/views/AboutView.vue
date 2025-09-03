@@ -8,8 +8,11 @@
 
 <style scoped lang="scss">
 #about {
-  height: 100%;
-  padding: 120px 240px 0;
+  height: 100vh;
+  padding: 120px 0;
+  background-color: #363434;
+  box-sizing: border-box;
+  color: #fff;
 }
 
 @media (max-width: 1040px) {

@@ -52,11 +52,13 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, onMounted, onBeforeUnmount } from 'vue'
-import { useRouter } from 'vue-router'
-import { ElMessage, type FormInstance, type FormRules } from 'element-plus'
-import { User, Lock } from '@element-plus/icons-vue'
-import { useUserStore } from '@/stores/user'
+import { ref, reactive, onMounted } from 'vue';
+import { useRouter } from 'vue-router';
+import { ElMessage, type FormInstance, type FormRules } from 'element-plus';
+import { User, Lock } from '@element-plus/icons-vue';
+import { useUserStore } from '@/stores/user';
+import { addSettingRoute } from '@/router/index';
+import { gsap } from "gsap";
 
 import * as THREE from 'three';
 import BIRDS from 'vanta/src/vanta.birds';
@@ -74,7 +76,15 @@ onMounted(() => {
     el: loginRef.value,
     THREE: THREE,
   })
+
+  loginBoxAnimate();
 })
+
+const loginBoxAnimate = () => {
+  gsap.fromTo(".login-form",
+    { yPercent: 200, duration: 1 },
+    { yPercent: 0, duration: 1 })
+}
 
 // 登录表单数据
 const loginForm = reactive({
@@ -112,6 +122,7 @@ const handleLogin = async () => {
 
     if (result.success) {
       // ElMessage.success('登录成功！')
+      addSettingRoute();
     } else {
       throw result.error
     }
@@ -166,6 +177,8 @@ initSavedUsername()
 .login-container {
   width: 100%;
   max-width: 400px;
+  height: 500px;
+  overflow: hidden;
 }
 
 .login-form {

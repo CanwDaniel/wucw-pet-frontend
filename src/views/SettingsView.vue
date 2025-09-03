@@ -13,9 +13,14 @@
 
       <el-table-column fixed="right" label="操作" min-width="130">
         <template #default="scope">
-          <el-button link type="primary" size="small" @click="handleClick('add', scope.row)">添加</el-button>
-          <el-button link type="primary" size="small" @click="handleClick('update', scope.row)">更新</el-button>
-          <el-button link type="danger" size="small" @click="handleClick('delete', scope.row)">删除</el-button>
+          <el-button link type="primary" :disabled="add" size="small"
+            @click="handleClick('add', scope.row)">添加</el-button>
+
+          <el-button link type="primary" :disabled="update" size="small"
+            @click="handleClick('update', scope.row)">更新</el-button>
+
+          <el-button link type="danger" :disabled="del" size="small"
+            @click="handleClick('delete', scope.row)">删除</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -29,7 +34,13 @@ import { ref, onMounted, reactive } from 'vue';
 import { userListRequest, userDelRequest, userRequest } from '@/utils/apis/api/user';
 import type { UserRequestType } from '@/utils/apis/types/user.d';
 import { ElMessage, ElMessageBox } from 'element-plus';
+import { getUserInfo } from '@/utils/auth'
 import UserDialog from '@/components/UserDialog.vue';
+
+const { permissions } = getUserInfo();
+const add = !permissions.includes('add');
+const del = !permissions.includes('delete');
+const update = !permissions.includes('update');
 
 const table = reactive({
   loading: true,
@@ -43,7 +54,7 @@ const table = reactive({
       label: '用户类型',
       prop: 'usertype',
       formater: (row: any) => {
-        return row.usertype == 0 ? '管理员' : '普通用户';
+        return row.usertype == 1 ? '管理员' : '普通用户';
       },
     },
     {
@@ -76,10 +87,10 @@ const userDialogRef = ref<InstanceType<typeof UserDialog> | null>(null)
 const handleClick = (data: string, row: any) => {
   switch (data) {
     case 'add':
-      userDialogRef.value!.open('新增', row);
+      userDialogRef.value!.open('新增', { ...row, password: '' });
       break;
     case 'update':
-      userDialogRef.value!.open('更新', row);
+      userDialogRef.value!.open('更新', { ...row, password: '' });
       break;
     case 'delete':
       delUser(row.userid);
@@ -105,7 +116,7 @@ const addAndUpdateUser = (data: UserRequestType) => {
     ElMessage({ type: 'success', message: tips });
     getUserList();
   }).catch((error) => {
-    ElMessage({ type: 'error', message: error.response.data.message[0] });
+    ElMessage({ type: 'error', message: error.response.data.message });
   }).finally(() => {
     table.loading = false;
   })
@@ -139,7 +150,7 @@ const delUser = (userid: string) => {
       ElMessage({ type: 'success', message: '删除成功' });
       getUserList();
     }).catch((error) => {
-      ElMessage({ type: 'error', message: error.response.data.message[0] });
+      ElMessage({ type: 'error', message: error.response.data.message });
     })
   }).finally(() => {
     table.loading = false;

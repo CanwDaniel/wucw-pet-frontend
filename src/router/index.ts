@@ -3,6 +3,8 @@ import { isLoggedIn } from '@/utils/auth';
 import HomeView from '../views/HomeView.vue';
 import LoginView from '../views/LoginView.vue';
 import AboutView from '../views/AboutView.vue';
+import NotFoundView from '../views/NotFoundView.vue';
+import { getUserInfo } from '@/utils/auth';
 import SettingsView from '../views/SettingsView.vue';
 
 const router = createRouter({
@@ -21,19 +23,34 @@ const router = createRouter({
       meta: { requiresAuth: true },
     },
     {
-      path: '/settings',
-      name: 'settings',
-      component: SettingsView,
-      meta: { requiresAuth: true },
-    },
-    {
       path: '/login',
       name: 'login',
       component: LoginView,
       meta: { requiresAuth: false },
     },
+    {
+      path: '/:pathMatch(.*)*',
+      name: 'not-found',
+      component: NotFoundView,
+      meta: { requiresAuth: false },
+    },
   ],
 });
+
+export const addSettingRoute = () => {
+  const existed = getUserInfo()?.userid || null;
+  if (existed) {
+    const { roles } = getUserInfo();
+    if (roles.includes('管理员')) {
+      router.addRoute({
+        path: '/settings',
+        name: 'settings',
+        component: SettingsView,
+        meta: { requiresAuth: true },
+      });
+    }
+  }
+};
 
 // 路由守卫
 router.beforeEach((to, from, next) => {

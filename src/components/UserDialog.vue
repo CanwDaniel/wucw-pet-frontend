@@ -15,8 +15,8 @@
 
       <el-form-item label="用户类型" prop="usertype">
         <el-select v-model="formData.usertype" placeholder="请选择用户类型">
-          <el-option label="管理员" :value="0" />
-          <el-option label="普通用户" :value="1" />
+          <el-option label="管理员" :value="1" />
+          <el-option label="普通用户" :value="2" />
         </el-select>
       </el-form-item>
 
@@ -75,7 +75,7 @@ const formData = reactive({
   userid: '',
   username: '',
   password: '',
-  usertype: 1,
+  usertype: 2,
   phone: '',
   gender: 1,
   birthday: '',
@@ -148,7 +148,7 @@ const open = (title: string, row: any) => {
       userid: '',
       username: '',
       password: '',
-      usertype: 1,
+      usertype: 2,
       phone: '',
       gender: 1,
       birthday: '',

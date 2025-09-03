@@ -12,16 +12,22 @@ export const useUserStore = defineStore('user', () => {
   // 登录
   const login = async (loginData: LoginRequestType) => {
     try {
-      const response = await loginRequest(loginData);
+      const response = (await loginRequest(loginData)) as any;
 
       // 更新状态
-      setToken(response.data.token);
+      setToken(response.data.accessToken);
 
-      userInfo.value = response.data.userlist;
+      userInfo.value = response.data.userInfo;
 
-      const { username, userid, avatar } = response.data.userlist;
+      const permissions = response.data.userInfo.permissions.map(
+        (permission: any) => permission.code,
+      );
 
-      setUserInfo({ username, userid, avatar });
+      const roles = response.data.userInfo.roles;
+
+      const { username, userid, avatar } = response.data.userInfo;
+
+      setUserInfo({ username, userid, avatar, permissions, roles });
 
       return { success: true, data: response.data };
     } catch (error) {

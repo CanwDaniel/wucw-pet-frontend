@@ -39,13 +39,13 @@ instance.interceptors.response.use(
   },
   (error: AxiosError) => {
     // 处理 401 未授权错误
-    if (error.response?.status === 401) {
-      clearAuth();
-      // 如果不是登录页面，则跳转到登录页
-      if (router.currentRoute.value.path !== '/login') {
-        router.push('/login');
-      }
-    }
+    // if (error.response?.status === 401) {
+    //   clearAuth();
+    //   // 如果不是登录页面，则跳转到登录页
+    //   if (router.currentRoute.value.path !== '/login') {
+    //     router.push('/login');
+    //   }
+    // }
 
     return Promise.reject(error);
   },

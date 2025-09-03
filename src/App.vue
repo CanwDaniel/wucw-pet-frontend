@@ -1,5 +1,5 @@
 <template>
-	<template v-if="$route.name === 'login'">
+	<template v-if="$route.name === 'login' || $route.name === 'not-found'">
 		<router-view></router-view>
 	</template>
 	<template v-else>

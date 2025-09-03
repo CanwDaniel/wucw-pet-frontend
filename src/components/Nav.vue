@@ -6,10 +6,10 @@
     <div class="user-info">
       <el-dropdown @command="handleCommand">
         <div class="user-avatar">
-          <el-avatar :size="32" :src="avatar">
-            {{ username }}
+          <el-avatar :size="32" :src="ava">
+            {{ name }}
           </el-avatar>
-          <span class="username">{{ username }}</span>
+          <span class="username">{{ name }}</span>
           <el-icon>
             <ArrowDown />
           </el-icon>
@@ -17,9 +17,10 @@
 
         <template #dropdown>
           <el-dropdown-menu>
-            <!-- <el-dropdown-item command="profile">个人资料</el-dropdown-item> -->
-            <el-dropdown-item command="settings">设置</el-dropdown-item>
-            <el-dropdown-item divided command="logout">退出登录</el-dropdown-item>
+            <el-dropdown-item v-for="value in dropdown" :key="value.command" :divided="value.divided"
+              :command="value.command">
+              {{ value.title }}
+            </el-dropdown-item>
           </el-dropdown-menu>
         </template>
       </el-dropdown>
@@ -28,32 +29,46 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
-import { useRouter } from 'vue-router'
-import { ElMessageBox } from 'element-plus'
-import { ArrowDown } from '@element-plus/icons-vue'
-import { useUserStore } from '@/stores/user'
-import { getUserInfo } from '@/utils/auth'
+import { computed } from 'vue';
+import { useRouter } from 'vue-router';
+import { ElMessageBox } from 'element-plus';
+import { ArrowDown } from '@element-plus/icons-vue';
+import { useUserStore } from '@/stores/user';
+import { getUserInfo } from '@/utils/auth';
 
-const router = useRouter()
-const userStore = useUserStore()
+const router = useRouter();
+const userStore = useUserStore();
+const { username, avatar, roles } = getUserInfo() || { uasername: '', avatar: '', roles: [] };
 
-const username = userStore.userInfo?.username || getUserInfo()?.username || '';
-const avatar = userStore.userInfo?.avatar || getUserInfo()?.avatar || '';
+const name = userStore.userInfo?.username || username || '';
+const ava = userStore.userInfo?.avatar || avatar || '';
+const isAdmin = roles.includes('管理员');
 
 // 路由名称映射表
 const routeNameMap: Record<string, string> = {
   'home': 'Home',
-  'about': 'About',
-  'settings': 'Settings'
+  'about': 'About'
 }
 
-const tabs = ['Home', 'About', 'Settings']
+const tabs = ['Home', 'About']
 
-// 根据当前路由名称获取对应的标签名称
-const currentTab = computed(() => {
-  const currentRouteName = router.currentRoute.value.name as string
-  return routeNameMap[currentRouteName] || 'Home'
+const dropdown = [{ command: 'logout', title: '退出登录', divided: isAdmin ? true : false }]
+
+if (isAdmin) {
+  routeNameMap.settings = 'settings';
+  tabs.push('settings');
+  dropdown.unshift({ command: 'settings', title: '设置', divided: false })
+}
+
+// 根据当前路由名称获取对应的标签名称（支持 v-model 写入）
+const currentTab = computed({
+  get() {
+    const currentRouteName = router.currentRoute.value.name as string;
+    return routeNameMap[currentRouteName] || 'Home';
+  },
+  set(tab: string) {
+    changeTab(tab);
+  }
 })
 
 const changeTab = (tab: string) => {
